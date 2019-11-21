@@ -1,5 +1,5 @@
 (ns district.server.web3-events
-  (:require [cljs-web3.eth :as web3-eth]
+  (:require [cljs-web3-next.eth :as web3-eth]
             [district.server.config :refer [config]]
             [district.server.smart-contracts :as smart-contracts]
             [district.server.web3 :refer [web3]]
