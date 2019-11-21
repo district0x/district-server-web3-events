@@ -103,11 +103,13 @@
        (callback err evt)))))
 
 
-(defn- create-past-event-filters [events last-block-number]
+(defn- create-past-event-filters [events last-block-number & [from-block]]
   (->> events
     (medley/remove-vals #(= (last %) "latest"))
     (medley/map-vals (fn [[contract event filter-opts block-opts]]
-                       (let [block-opts (assoc block-opts :to-block last-block-number)]
+                       (let [block-opts (cond-> block-opts
+                                          true (assoc :to-block last-block-number)
+                                          from-block (assoc :from-block from-block))]
                          (create-event-filter contract event filter-opts block-opts))))))
 
 
@@ -169,7 +171,7 @@
                  (log/error "Error uninstalling event filter" {:error err :filter-id id}))))))
 
 
-(defn start [{:keys [:events :read-past-events-from-file? :write-events-into-file? :file-path] :as opts
+(defn start [{:keys [:events :read-past-events-from-file? :write-events-into-file? :file-path :from-block] :as opts
               :or {file-path default-file-path}}]
 
   (when-not (web3/connected? @web3)
@@ -177,7 +179,7 @@
 
   (let [last-block-number (web3-eth/block-number @web3)
         past-event-filters (if-not read-past-events-from-file?
-                             (create-past-event-filters events (dec last-block-number))
+                             (create-past-event-filters events (dec last-block-number) from-block)
                              [])
         past-events-from-file (when read-past-events-from-file?
                                 (read-events-from-file file-path))]
