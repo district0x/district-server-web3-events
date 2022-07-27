@@ -2,8 +2,11 @@
   (:require [cljs.nodejs :as nodejs]
             [cljs.test :refer [run-tests]]
             [doo.runner :refer-macros [doo-tests]]
-            [tests.all]))
+            ;[tests.all]
+            [tests.foo-test]
+            ))
 
 (nodejs/enable-util-print!)
 
-(doo-tests 'tests.all)
+;(doo-tests 'tests.all)
+(doo-tests 'tests.foo-test)
